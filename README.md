@@ -24,8 +24,8 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/DanielM4tveev/file-explorer.git
-cd file-explorer
+git clone https://github.com/DanielM4tveev/WebServerHome.git
+cd WebServerHome
 ```
 
 2. Установите Python (если не установлен)
