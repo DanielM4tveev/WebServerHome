@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoolooGooloo</title>
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --secondary-color: #34A853;
+            --accent-color: #EA4335;
+            --text-color: #202124;
+            --light-gray: #f8f9fa;
+            --medium-gray: #dadce0;
+            --dark-gray: #70757a;
+            --shadow: 0 1px 6px rgba(32,33,36,.28);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-gray);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .logo {
+            font-size: clamp(42px, 8vw, 72px);
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .blue { color: var(--primary-color); }
+        .red { color: var(--accent-color); }
+        .yellow { color: #FBBC05; }
+        .green { color: var(--secondary-color); }
+        
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            width: 100%;
+            height: 48px;
+            border-radius: 24px;
+            border: 1px solid var(--medium-gray);
+            padding: 0 24px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-shadow: none;
+            transition: box-shadow 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            box-shadow: var(--shadow);
+            border-color: rgba(223,225,229,0);
+        }
+        
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            background-color: var(--light-gray);
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 14px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+        
+        .button:hover {
+            box-shadow: 0 1px 1px rgba(0,0,0,.1);
+            background-color: var(--light-gray);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .button.primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .button.primary:hover {
+            background-color: #3367d6;
+            border-color: #3367d6;
+        }
+        
+        .results {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            display: none; /* Скрываем результаты по умолчанию */
+        }
+        
+        .folder {
+            margin-left: 15px;
+            border-left: 2px solid var(--medium-gray);
+            padding-left: 15px;
+        }
+        
+        .folder-header {
+            cursor: pointer;
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        
+        .folder-header:hover {
+            background-color: rgba(241,243,244,0.5);
+        }
+        
+        .folder-icon {
+            margin-right: 12px;
+            font-size: 20px;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .file {
+            padding: 12px 0 12px 36px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        
+        .file:hover {
+            background-color: rgba(241,243,244,0.5);
+        }
+        
+        .file-icon {
+            margin-right: 12px;
+            color: var(--dark-gray);
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .file-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            word-break: break-word;
+            flex-grow: 1;
+        }
+        
+        .file-link:hover {
+            text-decoration: underline;
+        }
+        
+        .empty {
+            color: var(--dark-gray);
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+        }
+        
+        .file-path {
+            color: var(--dark-gray);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .logo {
+                margin: 10px 0;
+            }
+            
+            .search-box {
+                height: 44px;
+                padding: 0 20px;
+            }
+            
+            .results {
+                padding: 15px;
+                max-height: 65vh;
+            }
+            
+            .folder {
+                margin-left: 10px;
+                padding-left: 10px;
+            }
+            
+            .file {
+                padding-left: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .button {
+                width: 100%;
+            }
+            
+            .file {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-left: 36px;
+            }
+            
+            .file-info {
+                margin-left: 0;
+                margin-top: 5px;
+                width: 100%;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <span class="blue">G</span>
+            <span class="red">o</span>
+            <span class="yellow">o</span>
+            <span class="blue">g</span>
+            <span class="green">l</span>
+	          <span class="blue">e</span>
+	          <span style="font-family: 'Roboto'; font-size: smaller; text-transform: lowercase;"><sub>Home</sub></span>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchInput" placeholder="Search files...">
+            <div class="buttons">
+                <button type="submit" class="button primary" id="searchBtn">File Search</button>
+                <button type="button" class="button" id="listAllBtn">I'm Feeling Lucky</button>
+            </div>
+        </div>
+        
+        <div id="resultsContainer" class="results"></div>
+    </div>
+
+    <script>
+        // Supported file extensions that can be viewed in browser
+        const viewableExtensions = [
+            'html', 'htm', 'txt', 'pdf', 'md', 'csv',
+            'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp',
+            'mp3', 'mp4', 'webm', 'ogg', 'wav',
+            'mov', 'avi', 'mkv', 'flv'
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const listAllBtn = document.getElementById('listAllBtn');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            // Скрываем контейнер с результатами при загрузке
+            resultsContainer.style.display = 'none';
+            
+            searchForm.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+            
+            searchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+            
+            listAllBtn.addEventListener('click', function() {
+                loadRootDirectory();
+            });
+            
+            // Убрали автоматическую загрузку при открытии страницы
+        });
+
+        function getFileViewLink(filePath, fileName) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            const encodedPath = encodeURI(filePath);
+            
+            if (viewableExtensions.includes(extension)) {
+                return encodedPath; // Open in browser
+            } else {
+                return `/download?file=${encodeURIComponent(filePath)}`; // Download
+            }
+        }
+
+        async function loadRootDirectory() {
+            const resultsContainer = document.getElementById('resultsContainer');
+            showLoading();
+            try {
+                const response = await fetch('/files?root=true');
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                renderFileTree(data, resultsContainer);
+                resultsContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading files:', error);
+                showError('Error loading files. Please try again.');
+            }
+        }
+
+        async function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            if (searchTerm) {
+                showLoading();
+                try {
+                    const response = await fetch(`/files?search=${encodeURIComponent(searchTerm)}`);
+                    if (!response.ok) throw new Error('Network error');
+                    const data = await response.json();
+                    renderFileList(data, resultsContainer);
+                    resultsContainer.style.display = 'block';
+                } catch (error) {
+                    console.error('Error searching files:', error);
+                    showError('Error searching files. Please try again.');
+                }
+            } else {
+                // При пустом поиске показываем сообщение
+                resultsContainer.innerHTML = '<div class="empty">Please enter search term or click "I\'m Feeling Lucky"</div>';
+                resultsContainer.style.display = 'block';
+            }
+        }
+
+        function renderFileTree(items, container) {
+            container.innerHTML = '';
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty">Empty folder</div>';
+                return;
+            }
+            
+            items.forEach(item => {
+                if (item.is_directory) {
+                    renderFolder(item, container);
+                } else {
+                    renderFile(item, container);
+                }
+            });
+        }
+
+        function renderFileList(items, container) {
+            container.innerHTML = '';
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty">No files found</div>';
+                return;
+            }
+            
+            items.forEach(item => {
+                if (item.is_directory) {
+                    const div = document.createElement('div');
+                    div.className = 'folder-header';
+                    div.innerHTML = `
+                        <span class="folder-icon">📁</span>
+                        <span>${escapeHtml(item.name)}</span>
+                    `;
+                    div.addEventListener('click', function() {
+                        loadFolderContents(item.path, container);
+                    });
+                    container.appendChild(div);
+                } else {
+                    renderFile(item, container);
+                }
+            });
+        }
+
+        function renderFolder(item, container) {
+            const folderDiv = document.createElement('div');
+            
+            const folderHeader = document.createElement('div');
+            folderHeader.className = 'folder-header';
+            folderHeader.innerHTML = `
+                <span class="folder-icon">📁</span>
+                <span>${escapeHtml(item.name)}</span>
+            `;
+            
+            const folderContent = document.createElement('div');
+            folderContent.className = 'folder';
+            folderContent.style.display = 'none';
+            
+            folderHeader.addEventListener('click', function() {
+                if (folderContent.style.display === 'none' || folderContent.innerHTML === '') {
+                    loadFolderContents(item.path, folderContent);
+                    folderContent.style.display = 'block';
+                    folderHeader.querySelector('.folder-icon').textContent = '📂';
+                } else {
+                    folderContent.style.display = 'none';
+                    folderHeader.querySelector('.folder-icon').textContent = '📁';
+                }
+            });
+            
+            folderDiv.appendChild(folderHeader);
+            folderDiv.appendChild(folderContent);
+            container.appendChild(folderDiv);
+        }
+
+        function renderFile(item, container) {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'file';
+            const extension = item.name.split('.').pop().toLowerCase();
+            const isViewable = viewableExtensions.includes(extension);
+            
+            fileDiv.innerHTML = `
+                <span class="file-icon">📄</span>
+                <a href="${getFileViewLink(item.path, item.name)}" 
+                   class="file-link"
+                   ${isViewable ? '' : 'download'}>
+                   ${escapeHtml(item.name)}
+                </a>
+                <div class="file-info">
+                    <span class="file-path">${escapeHtml(item.path)}</span>
+                </div>
+            `;
+            container.appendChild(fileDiv);
+        }
+
+        async function loadFolderContents(path, container) {
+            showLoading(container);
+            try {
+                const response = await fetch(`/files?path=${encodeURIComponent(path)}`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                
+                if (container.className === 'results') {
+                    const newContainer = document.createElement('div');
+                    newContainer.className = 'folder';
+                    renderFileTree(data, newContainer);
+                    container.innerHTML = '';
+                    container.appendChild(newContainer);
+                } else {
+                    renderFileTree(data, container);
+                }
+            } catch (error) {
+                console.error('Error loading folder contents:', error);
+                container.innerHTML = '<div class="empty">Error loading contents</div>';
+            }
+        }
+
+        function showLoading(container = null) {
+            const target = container || document.getElementById('resultsContainer');
+            target.innerHTML = '<div class="empty">Loading...</div>';
+            if (container === null) {
+                target.style.display = 'block';
+            }
+        }
+
+        function showError(message) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = `<div class="empty">${escapeHtml(message)}</div>`;
+            container.style.display = 'block';
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
